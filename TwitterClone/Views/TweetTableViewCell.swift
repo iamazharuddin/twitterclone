@@ -59,7 +59,7 @@ class TweetTableViewCell: UITableViewCell {
     
     private let replyButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "bubble.left"), for: .normal)
+        button.setImage(UIImage(named: "replyIcon"), for: .normal)
         button.tintColor = .systemGray2
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -67,7 +67,7 @@ class TweetTableViewCell: UITableViewCell {
     
     private let retweetButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "arrow.2.squarepath"), for: .normal)
+        button.setImage(UIImage(named: "retweetIcon"), for: .normal)
         button.tintColor = .systemGray2
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
