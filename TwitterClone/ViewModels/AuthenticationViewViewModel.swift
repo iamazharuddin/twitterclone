@@ -16,7 +16,7 @@ final  class AuthenticationViewViewModel : ObservableObject {
     @Published var user : User?
     @Published var error : String?
     
-    private var subscription : Set<AnyCancellable> = []
+    private var subscriptions : Set<AnyCancellable> = []
     
     func validateAuthenticationForm(){
         guard let email = email, let password = password else {
@@ -37,13 +37,29 @@ final  class AuthenticationViewViewModel : ObservableObject {
            
             return }
         AuthManager.shared.registerUser(with: email, password: password)
+            .handleEvents(receiveOutput: { [weak self] user in
+                self?.user = user
+            })
             .sink { [weak self] completion in
                 if case .failure(let error) =  completion{
                     self?.error = error.localizedDescription
                 }
             } receiveValue: { [weak self] user in
-                self?.user = user
-            }.store(in: &subscription)
+                self?.createRecord(for: user)
+            }.store(in: &subscriptions)
+    }
+    
+    func createRecord(for user: User) {
+        DatabaseManager.shared.collectionUsers(add: user)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.error = error.localizedDescription
+                }
+            } receiveValue: { state in
+                print("Adding user record to database: \(state)")
+            }
+            .store(in: &subscriptions)
+
     }
     
     func loginUser(){
@@ -57,7 +73,7 @@ final  class AuthenticationViewViewModel : ObservableObject {
             }
         } receiveValue: { [weak self] user in
             self?.user = user
-        }.store(in: &subscription)
+        }.store(in: &subscriptions)
 
     }
 }

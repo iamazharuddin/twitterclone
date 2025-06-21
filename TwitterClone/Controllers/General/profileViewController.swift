@@ -6,10 +6,12 @@
 //
 
 import UIKit
-
+import SDWebImage
+import Combine
 class profileViewController: UIViewController {
-
-    
+    private let viewModel = ProfileViewViewModel()
+    private lazy var headerView = ProfileHeaderView(frame:CGRect(x: 0, y: 0, width: profileTableView.frame.width, height: 300))
+    private var subscrioption : Set<AnyCancellable> = []
     private let profileTableView : UITableView = {
         let tableView = UITableView()
         tableView.register(TweetTableViewCell.self, forCellReuseIdentifier: TweetTableViewCell.identifier)
@@ -22,12 +24,18 @@ class profileViewController: UIViewController {
         view.backgroundColor = .systemBackground
         navigationItem.title = "profile"
         
-        let headerView = ProfileHeaderView(frame:CGRect(x: 0, y: 0, width: profileTableView.frame.width, height: 300))
         view.addSubview(profileTableView)
         profileTableView.dataSource = self
         profileTableView.delegate = self
         profileTableView.tableHeaderView = headerView
         configureConstraint()
+        bindViews()
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.retreiveUser()
     }
     
     
@@ -42,6 +50,18 @@ class profileViewController: UIViewController {
 
         
         NSLayoutConstraint.activate(profileTableViewConstraint)
+    }
+    
+    
+    private func bindViews(){
+        viewModel.$user.sink { twitterUser in
+            guard let twitteruser = twitterUser else { return }
+            self.headerView.displayNameLabel.text = twitteruser.displayName
+            self.headerView.userbioLabel.text = twitteruser.bio
+            self.headerView.usernameLabel.text = "@\(twitterUser?.username ?? "")"
+            self.headerView.profileAvatorImageView.sd_setImage(with: URL(string: twitteruser.avatarPath))
+            
+        }.store(in: &subscrioption)
     }
 
 }

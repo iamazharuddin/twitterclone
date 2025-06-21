@@ -37,7 +37,6 @@ class OnboardingViewController: UIViewController {
     
     
     private let promptLabel: UILabel = {
-       
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.tintColor = .gray
@@ -48,7 +47,6 @@ class OnboardingViewController: UIViewController {
 
     
     private let loginButton: UIButton = {
-       
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Login", for: .normal)

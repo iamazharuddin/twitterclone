@@ -8,7 +8,7 @@
 import UIKit
 
 class ProfileHeaderView: UIView {
-    private let joinDateLabel : UILabel = {
+    let joinDateLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Joined May 2022"
@@ -25,7 +25,7 @@ class ProfileHeaderView: UIView {
         return imageView
     }()
     
-    private let userbioLabel : UILabel = {
+    let userbioLabel : UILabel = {
        let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "iOS Developer"
@@ -34,7 +34,7 @@ class ProfileHeaderView: UIView {
         return label
     }()
     
-    private let usernameLabel : UILabel = {
+   let usernameLabel : UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "iamazharuddin"
@@ -43,7 +43,7 @@ class ProfileHeaderView: UIView {
         return label
     }()
     
-    private let displayNameLabel : UILabel = {
+    let displayNameLabel : UILabel = {
        let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Azhar"
@@ -52,7 +52,7 @@ class ProfileHeaderView: UIView {
         return label
     }()
     
-    private let profileAvatorImageView : UIImageView = {
+    let profileAvatorImageView : UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.layer.masksToBounds = true
@@ -75,7 +75,6 @@ class ProfileHeaderView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-//        backgroundColor = .red
         addSubview(profileImageView)
         addSubview(profileAvatorImageView)
         addSubview(displayNameLabel)

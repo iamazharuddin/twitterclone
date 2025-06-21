@@ -7,8 +7,25 @@
 
 import UIKit
 import FirebaseAuth
-
+import Combine
 class HomeViewController: UIViewController {
+    let viewModel = HomeViewViewModel()
+    var subscriptions : Set<AnyCancellable> = []
+    private lazy var composeTweetButton : UIButton = {
+        let button = UIButton(type: .system, primaryAction: UIAction(handler: { action in
+            print("ComposeTweetButton Clicked")
+            let vc = UINavigationController(rootViewController: TweetComposeViewController())
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
+        }))
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(pointSize: 18)), for: .normal)
+        button.layer.cornerRadius = 30
+        button.clipsToBounds = true
+        button.tintColor = .white
+        button.backgroundColor = .twitterBlueColor
+        return button
+    }()
     
     private func configureNavigationBar(){
             let logoImageView  = UIImageView(frame: CGRect(x: 0, y: 0, width: 36, height: 36))
@@ -38,11 +55,15 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(timelineTableView)
+        view.addSubview(composeTweetButton)
+        view.bringSubviewToFront(composeTweetButton)
         timelineTableView.delegate = self
         timelineTableView.dataSource = self
         
         configureNavigationBar()
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(didTapSignOut))
+        bindViews()
+        addcomposeTweetButtonConstraint()
     }
     
     
@@ -50,6 +71,8 @@ class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = false
         handleAuthentication()
+        viewModel.retreiveUser()
+        view.backgroundColor = .systemBackground 
     }
     
     
@@ -65,11 +88,40 @@ class HomeViewController: UIViewController {
             present(vc, animated: false)
         }
     }
+    
+    func bindViews() {
+        viewModel.$user.sink { [weak self] user in
+            guard let user = user else { return }
+            print(user)
+            if user.isUserOnboarded == false {
+                self?.completeUserOnboarding()
+            }
+        }
+        .store(in: &subscriptions)
+        
+        
+    }
+    
+    
+    private func addcomposeTweetButtonConstraint(){
+        let composeTweetButtonConstraint = [
+            composeTweetButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            composeTweetButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            composeTweetButton.widthAnchor.constraint(equalToConstant: 60),
+            composeTweetButton.heightAnchor.constraint(equalToConstant: 60)
+        ]
+        NSLayoutConstraint.activate(composeTweetButtonConstraint)
+    }
 
         
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         timelineTableView.frame = view.bounds
+    }
+    
+    private func completeUserOnboarding(){
+        let vc = ProfileDataFormViewController()
+        present(vc, animated: true)
     }
 
 }

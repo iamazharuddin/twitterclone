@@ -105,7 +105,7 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func didTapLogin() {
-        viewModel.loginUser()
+          viewModel.loginUser()
     }
     
     
